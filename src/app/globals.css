@@ -1,0 +1,535 @@
+/* ImGui Premium Dark Theme with Glassmorphism / Acrylic Blur */
+:root {
+    --bg-color: #06080c;
+    --window-bg: rgba(17, 20, 26, 0.85); /* Semi-transparent for blur */
+    --title-bg: rgba(28, 45, 66, 0.9);
+    --title-bg-active: rgba(36, 59, 85, 0.9);
+    --border-color: rgba(255, 255, 255, 0.06);
+    --text-color: #f1f3f5;
+    --text-muted: #8a99ad;
+    --btn-bg: rgba(31, 39, 49, 0.8);
+    --btn-hover: rgba(45, 56, 70, 0.9);
+    --btn-active: rgba(26, 74, 117, 0.9);
+    --input-bg: rgba(11, 12, 16, 0.7);
+    --frame-bg: rgba(22, 28, 36, 0.5);
+    --item-hover: rgba(27, 34, 45, 0.6);
+    --accent: #0088cc;
+    --accent-glow: rgba(0, 136, 204, 0.4);
+    --success: rgba(27, 138, 90, 0.8);
+    --success-hover: rgba(34, 160, 107, 0.9);
+    --success-active: rgba(21, 106, 69, 0.9);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    /* Glowing background blobs that look amazing behind blurred panels */
+    background-image: 
+        radial-gradient(at 10% 20%, rgba(0, 136, 204, 0.12) 0px, transparent 50%),
+        radial-gradient(at 90% 80%, rgba(39, 174, 96, 0.08) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(142, 68, 173, 0.06) 0px, transparent 60%);
+    color: var(--text-color);
+    font-family: var(--font-dynapuff), 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Niestandardowy Scrollbar ImGui - Bardziej elegancki */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    border: 2px solid transparent;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.desktop {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    gap: 12px;
+}
+
+/* Okno ImGui - Efekt Akrylu / Blur */
+.imgui-window {
+    background-color: var(--window-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+    overflow: hidden;
+    backdrop-filter: blur(20px) saturate(140%); /* Frosted glass effect */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.imgui-window:focus-within {
+    border-color: rgba(0, 136, 204, 0.3);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 136, 204, 0.1);
+}
+
+.imgui-window.sidebar {
+    width: 350px;
+    flex-shrink: 0;
+}
+.imgui-window.main-view {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.imgui-title {
+    background-color: var(--title-bg);
+    color: #fff;
+    padding: 10px 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+}
+
+.imgui-content {
+    padding: 14px;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scrollbar-width: none; /* Firefox */
+}
+.imgui-content::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Edge */
+}
+
+/* Zakładki (Tryby w sidebarze i główne widoki) */
+.imgui-tabs {
+    display: flex;
+    background-color: rgba(13, 16, 21, 0.4);
+    border-bottom: 1px solid var(--border-color);
+    padding-top: 4px;
+    padding-left: 4px;
+    gap: 2px;
+}
+.imgui-tab {
+    padding: 8px 16px;
+    background-color: var(--frame-bg);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    font-size: 12px;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.imgui-tab:active {
+    transform: scale(0.98);
+}
+.imgui-tab:hover {
+    background-color: var(--item-hover);
+    color: var(--text-color);
+}
+.imgui-tab.active {
+    background-color: transparent;
+    color: #fff;
+    border-bottom: 1px solid rgba(17, 20, 26, 0.95);
+    margin-bottom: -1px;
+    box-shadow: 0 -2px 0 var(--accent);
+}
+
+/* Mode Selector (Wielkie Litery) */
+.mode-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+    background-color: rgba(13, 16, 21, 0.5);
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+.mode-tab {
+    flex: 1;
+    text-align: center;
+    background-color: transparent;
+    padding: 8px 4px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+.mode-tab:active {
+    transform: scale(0.98);
+}
+.mode-tab:hover {
+    background-color: var(--btn-hover);
+    color: white;
+}
+.mode-tab.active {
+    background-color: var(--accent);
+    color: white;
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.imgui-header {
+    background-color: var(--frame-bg);
+    padding: 6px 10px;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #b0c0d0;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    border-left: 3px solid var(--accent);
+    margin-top: 4px;
+}
+
+/* Kontrolki */
+.control-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.control-label {
+    flex: 1;
+    color: var(--text-color);
+    font-weight: 500;
+}
+input[type="number"], input[type="text"] {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-color);
+    padding: 6px 10px;
+    width: 120px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+input[type="number"]:focus, input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+button.imgui-btn {
+    background-color: var(--btn-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-color);
+    padding: 8px 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+}
+button.imgui-btn:hover {
+    background-color: var(--btn-hover);
+    border-color: rgba(255,255,255,0.1);
+}
+button.imgui-btn:active {
+    background-color: var(--btn-active);
+    transform: scale(0.98);
+}
+
+button.imgui-btn.primary {
+    background-color: rgba(28, 45, 66, 0.8);
+    border-color: rgba(0, 136, 204, 0.3);
+}
+button.imgui-btn.primary:hover {
+    background-color: var(--title-bg-active);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(0, 136, 204, 0.25);
+}
+
+button.imgui-btn.success {
+    background-color: var(--success);
+    border-color: rgba(34, 160, 107, 0.4);
+    color: white;
+}
+button.imgui-btn.success:hover {
+    background-color: var(--success-hover);
+    box-shadow: 0 0 12px rgba(27, 138, 90, 0.35);
+}
+button.imgui-btn.success:active {
+    background-color: var(--success-active);
+}
+
+/* Plik / Dropzone z Blurem */
+.file-drop {
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    background-color: rgba(22, 28, 36, 0.4);
+    backdrop-filter: blur(8px); /* Blur behind the dropzone */
+    text-align: center;
+    padding: 24px 14px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.file-drop:hover, .file-drop.dragover {
+    border-color: var(--accent);
+    background-color: rgba(27, 34, 45, 0.5);
+    color: var(--text-color);
+    box-shadow: 0 0 15px rgba(0, 136, 204, 0.2);
+}
+.text-info {
+    color: var(--text-muted);
+    font-size: 11px;
+    margin-top: 2px;
+}
+.text-highlight {
+    color: #389bf2;
+    font-weight: 600;
+}
+
+/* Info Box z Blurem */
+.info-box {
+    background-color: rgba(11, 12, 16, 0.5);
+    backdrop-filter: blur(10px); /* Frosted glass effect for info panels */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px 12px;
+}
+.info-box ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 6px;
+    max-height: 120px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+.info-box li {
+    margin-bottom: 4px;
+    color: #ccd5e0;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Workspace (Canvas) */
+.workspace {
+    flex-grow: 1;
+    background-color: #040608;
+    background-image: 
+        linear-gradient(45deg, #090b0e 25%, transparent 25%, transparent 75%, #090b0e 75%, #090b0e),
+        linear-gradient(45deg, #090b0e 25%, transparent 25%, transparent 75%, #090b0e 75%, #090b0e);
+    background-size: 24px 24px;
+    background-position: 0 0, 12px 12px;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+}
+.workspace:active {
+    cursor: grabbing;
+}
+
+.canvas-container {
+    position: absolute;
+    transform-origin: 0 0;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+canvas {
+    display: block;
+    image-rendering: pixelated; /* Ostry pixel-art */
+    background: transparent;
+}
+
+.empty-text {
+    color: var(--text-muted);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Widok wyników */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    padding: 14px;
+    width: 100%;
+    align-content: start;
+    overflow-y: auto;
+    background-color: transparent; /* Seamless grid */
+}
+.result-card {
+    background-color: rgba(22, 28, 36, 0.45);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.result-card:hover {
+    border-color: rgba(0, 136, 204, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+.result-img-wrapper {
+    background-color: #000;
+    border-radius: 4px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.02);
+    background-image: 
+        linear-gradient(45deg, #0b0c10 25%, transparent 25%, transparent 75%, #0b0c10 75%, #0b0c10),
+        linear-gradient(45deg, #0b0c10 25%, transparent 25%, transparent 75%, #0b0c10 75%, #0b0c10);
+    background-size: 12px 12px;
+    background-position: 0 0, 6px 6px;
+}
+.result-img-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    image-rendering: pixelated;
+    object-fit: contain;
+}
+.result-info {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-align: left;
+    background: rgba(13, 16, 21, 0.7);
+    padding: 6px;
+    border-radius: 4px;
+}
+.result-info > div {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Status */
+#status-msg {
+    margin-top: 5px;
+    padding: 8px 12px;
+    text-align: center;
+    border-radius: 4px;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+.status-ok {
+    background-color: rgba(27, 138, 90, 0.15);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+.status-err {
+    background-color: rgba(192, 57, 43, 0.15);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 5px;
+    pointer-events: none;
+    background: rgba(17, 20, 26, 0.8);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+}
+
+/* Settings Modal Styles */
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.15s ease-out;
+}
+
+.settings-modal {
+    width: 320px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    animation: scaleIn 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.settings-btn-icon:hover {
+    color: #fff !important;
+    transform: rotate(30deg);
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
