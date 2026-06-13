@@ -1,6 +1,6 @@
 {
   "name": "rect",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -19,12 +19,13 @@
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.2",
     "@types/jszip": "^3.4.0",
-    "@types/node": "^20",
+    "@types/node": "^20.19.43",
     "@types/omggif": "^1.0.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

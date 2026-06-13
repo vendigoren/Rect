@@ -15,6 +15,12 @@ const groupColors = [
 ];
 
 import { translations } from "../utils/i18n";
+import Sidebar from "../components/Sidebar";
+import Toolbar from "../components/Toolbar";
+import Workspace from "../components/Workspace";
+import { AppState, AppActions } from "../types";
+import { useLanguage } from "../hooks/useLanguage";
+
 
 interface FileInfo {
   width: number;
@@ -55,30 +61,8 @@ export default function Home() {
 
   const [status, setStatus] = useState<{ text: string; isError: boolean } | null>(null);
 
-  const [language, setLanguage] = useState<"en" | "pl">("en");
+  const { language, changeLanguage, t } = useLanguage();
   const [showSettings, setShowSettings] = useState<boolean>(false);
-
-  useEffect(() => {
-    const savedLang = localStorage.getItem("rect_language");
-    if (savedLang === "en" || savedLang === "pl") {
-      setLanguage(savedLang);
-    }
-  }, []);
-
-  const changeLanguage = (lang: "en" | "pl") => {
-    setLanguage(lang);
-    localStorage.setItem("rect_language", lang);
-  };
-
-  const t = (key: keyof typeof translations.en, params?: Record<string, string | number>) => {
-    let text = translations[language][key] || translations.en[key] || key;
-    if (params) {
-      Object.entries(params).forEach(([k, v]) => {
-        text = text.replace(`{${k}}`, String(v));
-      });
-    }
-    return text;
-  };
 
   const transformRef = useRef({ scale: 1, x: 0, y: 0 });
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -835,445 +819,33 @@ export default function Home() {
     return items;
   };
 
+
+  const appState: AppState = {
+    appMode, file, fileName, fileInfo, sourceImage, gifFrames, generatedSlices,
+    gifCols, autoGifCols, gridCols, gridRows, chunkSize, gifFrameWidth, gifFrameHeight,
+    targetFrameWidth, targetFrameHeight, tab, status, language, showSettings,
+    isDragging, isDragOver, isZipping
+  };
+
+  const appActions: AppActions = {
+    setAppMode, handleSwitchMode, setAutoGifCols, setGifCols, handleGenerateGif,
+    setGridCols, setGridRows, setTargetFrameWidth, setTargetFrameHeight, setChunkSize,
+    detectGridLayout, handleGenerateCut, handleDownloadAllZip, setTab, handleMouseDown,
+    setShowSettings, changeLanguage, handleDragOver, handleDragLeave, handleDrop,
+    handleInputChange, fileInputRef, workspaceRef, canvasContainerRef, canvasRef,
+    transformRef, downloadSingle, getExecutionPlan, t, showStatus
+  };
+
   return (
     <div className="desktop">
-
       <div className="imgui-window sidebar">
-        <div className="imgui-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>{t("sidebarTitle")}</span>
-          <button 
-            className="settings-btn-icon" 
-            onClick={() => setShowSettings(true)}
-            title={t("settingsTitle")}
-            style={{
-              background: "none",
-              border: "none",
-              color: "rgba(255,255,255,0.6)",
-              cursor: "pointer",
-              fontSize: "16px",
-              padding: "0 4px",
-              display: "flex",
-              alignItems: "center"
-            }}
-          >
-            ⚙
-          </button>
-        </div>
-
-        <div className="imgui-content" style={{ paddingTop: 0 }}>
-
-          <div className="mode-tabs" style={{ marginTop: "10px" }}>
-            <div
-              className={`mode-tab ${appMode === "gif2sprite" ? "active" : ""}`}
-              onClick={() => handleSwitchMode("gif2sprite")}
-            >
-              {t("tabSpritesheet")}
-            </div>
-            <div
-              className={`mode-tab ${appMode === "cutting" ? "active" : ""}`}
-              onClick={() => handleSwitchMode("cutting")}
-            >
-              {t("tabCutter")}
-            </div>
-          </div>
-
-          <div className="imgui-header">{t("fileInputHeader")}</div>
-          <label
-            className={`file-drop ${isDragOver ? "dragover" : ""}`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            <svg
-              className="w-8 h-8 mb-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              style={{ width: "32px", height: "32px", opacity: 0.5, marginBottom: "4px" }}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-            <div>{fileName || t("dragDropChooseFile")}</div>
-            <div className="text-info">
-              {appMode === "gif2sprite" ? t("dragDropHintGif") : t("dragDropHintImg")}
-            </div>
-          </label>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleInputChange}
-            style={{ display: "none" }}
-            accept={appMode === "gif2sprite" ? "image/gif" : "image/png, image/jpeg"}
-          />
-          <button className="imgui-btn" onClick={() => fileInputRef.current?.click()} style={{ marginTop: "-6px" }}>
-            {t("browseFiles")}
-          </button>
-
-          {fileInfo && (
-            <div className="text-info" style={{ display: "block", textAlign: "center", background: "#0d1015", padding: "6px", borderRadius: "3px", border: "1px solid var(--border-color)" }}>
-              {t("sourceResolution")}: <span className="text-highlight">{fileInfo.width}</span> x <span className="text-highlight">{fileInfo.height}</span> px
-            </div>
-          )}
-
-          {appMode === "gif2sprite" && (
-            <div id="panel-gif2sprite">
-              <div className="info-box" style={{ marginTop: "10px" }}>
-                <div style={{ color: "#fff", marginBottom: "2px", fontWeight: "bold" }}>
-                  {t("gifInfoTitle")}
-                </div>
-                <ul>
-                  <li>
-                    <span>{t("detectedFrames")}:</span>
-                    <span className="text-highlight">{fileInfo?.frames || 0}</span>
-                  </li>
-                  <li>
-                    <span>{t("frameSize")}:</span>
-                    <span>{fileInfo ? `${fileInfo.width}x${fileInfo.height} px` : "---"}</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="imgui-header" style={{ marginTop: "10px" }}>
-                {t("outputGridHeader")}
-              </div>
-
-              <div className="control-group" style={{ margin: "6px 0" }}>
-                <span className="control-label">{t("autoLayout")}</span>
-                <input
-                  type="checkbox"
-                  checked={autoGifCols}
-                  onChange={(e) => setAutoGifCols(e.target.checked)}
-                  style={{ cursor: "pointer", width: "16px", height: "16px" }}
-                />
-              </div>
-
-              <div className="control-group">
-                <span className="control-label" style={{ opacity: autoGifCols ? 0.5 : 1 }}>{t("columnCount")}</span>
-                <input
-                  type="number"
-                  min="1"
-                  max={fileInfo?.frames || 100}
-                  value={gifCols}
-                  disabled={autoGifCols}
-                  onChange={(e) => setGifCols(Math.max(1, parseInt(e.target.value) || 1))}
-                  style={{ opacity: autoGifCols ? 0.5 : 1 }}
-                />
-              </div>
-
-              {fileInfo && (
-                <div className="info-box" style={{ marginTop: "10px" }}>
-                  <div style={{ color: "#fff", marginBottom: "2px", fontWeight: "bold" }}>
-                    {t("resultSheetTitle")}
-                  </div>
-                  <ul>
-                    <li>
-                      <span>{t("gridLayout")}:</span>
-                      <span className="text-highlight">
-                        {gifCols} x {Math.ceil(fileInfo.frames / gifCols)}
-                      </span>
-                    </li>
-                    <li>
-                      <span>{t("fileDimension")}:</span>
-                      <span style={{ color: "#2ecc71", fontWeight: "bold" }}>
-                        {gifCols * fileInfo.width} x {Math.ceil(fileInfo.frames / gifCols) * fileInfo.height} px
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              )}
-
-              <div style={{ marginTop: "15px" }}>
-                <button
-                  id="btn-gen-gif"
-                  className="imgui-btn primary"
-                  onClick={handleGenerateGif}
-                  disabled={gifFrames.length === 0}
-                >
-                  {t("btnGenerateSpritesheet")}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {appMode === "cutting" && (
-            <div id="panel-cutting">
-              <div className="imgui-header" style={{ marginTop: "10px" }}>
-                {t("gridTitleSource")}
-              </div>
-              <div className="text-info" style={{ marginBottom: "8px" }}>
-                {t("gridSubtitleSource")}
-              </div>
-              <div className="control-group">
-                <span className="control-label">{t("colsX")}</span>
-                <input
-                  type="number"
-                  min="1"
-                  value={gridCols}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 1);
-                    setGridCols(val);
-                    if (sourceImage) {
-                      setTargetFrameWidth(Math.round(sourceImage.width / val));
-                    }
-                  }}
-                />
-              </div>
-              <div className="control-group" style={{ marginTop: "6px" }}>
-                <span className="control-label">{t("rowsY")}</span>
-                <input
-                  type="number"
-                  min="1"
-                  value={gridRows}
-                  onChange={(e) => {
-                    const val = Math.max(1, parseInt(e.target.value) || 1);
-                    setGridRows(val);
-                    if (sourceImage) {
-                      setTargetFrameHeight(Math.round(sourceImage.height / val));
-                    }
-                  }}
-                />
-              </div>
-
-              <div className="control-group" style={{ marginTop: "10px", borderTop: "1px dashed var(--border-color)", paddingTop: "10px" }}>
-                <div style={{ color: "#fff", marginBottom: "6px", fontWeight: "bold", fontSize: "11px" }}>
-                  {t("targetFrameSizeTitle")}
-                </div>
-                <div style={{ display: "flex", gap: "8px", width: "100%" }}>
-                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "2px" }}>
-                    <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)" }}>{t("widthPx")}</span>
-                    <input
-                      type="number"
-                      min="1"
-                      value={targetFrameWidth || ""}
-                      placeholder="e.g. 498"
-                      onChange={(e) => {
-                        const val = Math.max(1, parseInt(e.target.value) || 0);
-                        setTargetFrameWidth(val);
-                        if (sourceImage && val > 0) {
-                          setGridCols(Math.max(1, Math.round(sourceImage.width / val)));
-                        }
-                      }}
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "2px" }}>
-                    <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)" }}>{t("heightPx")}</span>
-                    <input
-                      type="number"
-                      min="1"
-                      value={targetFrameHeight || ""}
-                      placeholder="e.g. 278"
-                      onChange={(e) => {
-                        const val = Math.max(1, parseInt(e.target.value) || 0);
-                        setTargetFrameHeight(val);
-                        if (sourceImage && val > 0) {
-                          setGridRows(Math.max(1, Math.round(sourceImage.height / val)));
-                        }
-                      }}
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ marginTop: "10px" }}>
-                <button
-                  type="button"
-                  className="imgui-btn"
-                  style={{ 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center", 
-                    gap: "6px", 
-                    width: "100%", 
-                    padding: "6px",
-                    background: "rgba(56, 155, 242, 0.15)",
-                    border: "1px solid rgba(56, 155, 242, 0.4)",
-                    color: "#389bf2"
-                  }}
-                  onClick={() => {
-                    if (sourceImage) {
-                      detectGridLayout(sourceImage);
-                    } else {
-                      showStatus(t("statusSmartDetectNoImage"), true);
-                    }
-                  }}
-                >
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    style={{ width: "14px", height: "14px" }}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                  </svg>
-                  {t("btnSmartDetect")}
-                </button>
-              </div>
-
-              <div className="imgui-header" style={{ marginTop: "10px" }}>
-                {t("packageDivisionTitle")}
-              </div>
-              <div className="control-group">
-                <span className="control-label">{t("framesPerFile")}</span>
-                <input
-                  type="number"
-                  min="1"
-                  value={chunkSize}
-                  onChange={(e) => setChunkSize(Math.max(1, parseInt(e.target.value) || 1))}
-                  style={{ color: "#3498db", fontWeight: "bold" }}
-                />
-              </div>
-
-              <div className="info-box" style={{ marginTop: "10px" }}>
-                <div style={{ color: "#fff", marginBottom: "2px", fontWeight: "bold" }}>
-                  {t("outputPlanTitle")}
-                </div>
-                <ul>{getExecutionPlan()}</ul>
-              </div>
-
-              <div style={{ marginTop: "15px" }}>
-                <button
-                  id="btn-gen-cut"
-                  className="imgui-btn primary"
-                  onClick={handleGenerateCut}
-                  disabled={!sourceImage}
-                >
-                  {t("btnGeneratePackages")}
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div style={{ flexGrow: 1 }}></div>
-
-          {generatedSlices.length > 0 && (
-            <button
-              id="download-all-btn"
-              className="imgui-btn success"
-              onClick={handleDownloadAllZip}
-              disabled={isZipping}
-              style={{ padding: "10px" }}
-            >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                style={{ width: "16px", height: "16px" }}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
-              </svg>
-              {isZipping ? t("btnZipping") : t("btnExportAllZip")}
-            </button>
-          )}
-
-          {status && (
-            <div id="status-msg" className={status.isError ? "status-err" : "status-ok"}>
-              {status.text}
-            </div>
-          )}
+        <Sidebar state={appState} actions={appActions} />
+        <div className="imgui-content" style={{ paddingTop: 0, marginTop: "-10px" }}>
+          <Toolbar state={appState} actions={appActions} />
         </div>
       </div>
-
-      <div className="imgui-window main-view">
-        <div className="imgui-title">
-          <span>{t("workspaceTitle")}</span>
-        </div>
-
-        <div className="imgui-tabs">
-          <div
-            className={`imgui-tab ${tab === "preview" ? "active" : ""}`}
-            onClick={() => setTab("preview")}
-          >
-            {t("tabVisualizer")}
-          </div>
-          <div
-            className={`imgui-tab ${tab === "results" ? "active" : ""}`}
-            onClick={() => setTab("results")}
-          >
-            {t("tabResults")} ({generatedSlices.length})
-          </div>
-        </div>
-
-        <div
-          id="preview-view"
-          className="workspace"
-          ref={workspaceRef}
-          onMouseDown={handleMouseDown}
-          style={{ display: tab === "preview" ? "flex" : "none" }}
-        >
-          {!sourceImage && gifFrames.length === 0 && (
-            <div className="empty-state empty-text">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                style={{ width: "48px", height: "48px", opacity: 0.2, marginBottom: "8px" }}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span>{t("emptyWorkspace")}</span>
-            </div>
-          )}
-
-          {(sourceImage || gifFrames.length > 0) && (
-            <div
-              ref={canvasContainerRef}
-              className="canvas-container"
-              style={{
-                transform: `translate(${transformRef.current.x}px, ${transformRef.current.y}px) scale(${transformRef.current.scale})`,
-              }}
-            >
-              <canvas ref={canvasRef} />
-            </div>
-          )}
-
-          {(sourceImage || gifFrames.length > 0) && (
-            <div className="hint" style={{ position: "absolute", bottom: "10px", left: "50%", transform: "translateX(-50%)", zIndex: 10 }}>
-              {t("workspaceHint")}
-            </div>
-          )}
-        </div>
-
-        <div
-          id="results-view"
-          className="results-grid"
-          style={{ display: tab === "results" ? "grid" : "none" }}
-        >
-          {generatedSlices.map((slice, index) => (
-            <div key={`slice-${index}`} className="result-card">
-              <div className="result-img-wrapper">
-                <img src={slice.dataURL} alt={slice.filename} />
-              </div>
-              <div className="result-info">
-                <div style={{ color: "#fff", fontWeight: "bold", marginBottom: "2px" }}>
-                  {slice.filename}
-                </div>
-                <div>
-                  <span>{t("resultCardFrames")}</span>
-                  <span style={{ color: "#3498db" }}>{slice.framesCount}</span>
-                </div>
-                <div>
-                  <span>{t("resultCardDimensions")}</span>
-                  <span>{slice.w}x{slice.h}</span>
-                </div>
-              </div>
-              <button
-                className="imgui-btn primary"
-                style={{ marginTop: "auto" }}
-                onClick={() => downloadSingle(slice.dataURL, slice.filename)}
-              >
-                {t("downloadPngBtn")}
-              </button>
-            </div>
-          ))}
-          {generatedSlices.length === 0 && (
-            <div className="empty-text" style={{ gridColumn: "1 / -1", textAlign: "center", position: "static", transform: "none", marginTop: "100px" }}>
-              {t("emptyResults")}
-            </div>
-          )}
-        </div>
-      </div>
+      
+      <Workspace state={appState} actions={appActions} />
 
       {showSettings && (
         <div className="settings-overlay" onClick={() => setShowSettings(false)}>
@@ -1283,16 +855,7 @@ export default function Home() {
               <button 
                 className="close-btn" 
                 onClick={() => setShowSettings(false)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#e74c3c",
-                  cursor: "pointer",
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                  padding: "0 5px",
-                  lineHeight: 1
-                }}
+                style={{ background: "none", border: "none", color: "#e74c3c", cursor: "pointer", fontSize: "20px", fontWeight: "bold", padding: "0 5px", lineHeight: 1 }}
               >
                 ×
               </button>
@@ -1304,26 +867,14 @@ export default function Home() {
                   value={language}
                   onChange={(e) => changeLanguage(e.target.value as "en" | "pl")}
                   className="imgui-select"
-                  style={{
-                    background: "#161b22",
-                    color: "#fff",
-                    border: "1px solid var(--border-color)",
-                    padding: "4px 8px",
-                    borderRadius: "3px",
-                    cursor: "pointer",
-                    outline: "none"
-                  }}
+                  style={{ background: "#161b22", color: "#fff", border: "1px solid var(--border-color)", padding: "4px 8px", borderRadius: "3px", cursor: "pointer", outline: "none" }}
                 >
                   <option value="en">English</option>
                   <option value="pl">Polski</option>
                 </select>
               </div>
               <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
-                <button
-                  className="imgui-btn primary"
-                  onClick={() => setShowSettings(false)}
-                  style={{ padding: "5px 15px" }}
-                >
+                <button className="imgui-btn primary" onClick={() => setShowSettings(false)} style={{ padding: "5px 15px" }}>
                   {t("settingsSaveBtn")}
                 </button>
               </div>
