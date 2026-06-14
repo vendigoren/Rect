@@ -1,7 +1,7 @@
-/* ImGui Premium Dark Theme with Glassmorphism / Acrylic Blur */
+
 :root {
     --bg-color: #06080c;
-    --window-bg: rgba(17, 20, 26, 0.85); /* Semi-transparent for blur */
+    --window-bg: rgba(17, 20, 26, 0.85); 
     --title-bg: rgba(28, 45, 66, 0.9);
     --title-bg-active: rgba(36, 59, 85, 0.9);
     --border-color: rgba(255, 255, 255, 0.06);
@@ -20,6 +20,46 @@
     --success-active: rgba(21, 106, 69, 0.9);
 }
 
+:root[data-theme="azure"] {
+    
+    --accent: #0088cc;
+    --accent-glow: rgba(0, 136, 204, 0.4);
+    --accent-bg: rgba(0, 136, 204, 0.15);
+    --accent-text: #ffffff;
+}
+
+:root[data-theme="pearl"] {
+    --accent: #e2e8f0;
+    --accent-glow: rgba(226, 232, 240, 0.4);
+    --accent-bg: rgba(226, 232, 240, 0.15);
+    --accent-text: #111111;
+    --bg-color: #08090a;
+    --window-bg: rgba(20, 22, 24, 0.85);
+    --title-bg: rgba(35, 38, 42, 0.9);
+    --title-bg-active: rgba(45, 48, 52, 0.9);
+    --btn-bg: rgba(34, 36, 40, 0.8);
+    --btn-hover: rgba(48, 52, 56, 0.9);
+    --btn-active: rgba(60, 65, 70, 0.9);
+    --input-bg: rgba(14, 15, 16, 0.7);
+    --frame-bg: rgba(26, 28, 32, 0.5);
+}
+
+:root[data-theme="lavender"] {
+    --accent: #9b59b6;
+    --accent-glow: rgba(155, 89, 182, 0.4);
+    --accent-bg: rgba(155, 89, 182, 0.15);
+    --accent-text: #ffffff;
+    --bg-color: #07060a;
+    --window-bg: rgba(19, 17, 24, 0.85);
+    --title-bg: rgba(34, 28, 46, 0.9);
+    --title-bg-active: rgba(44, 36, 58, 0.9);
+    --btn-bg: rgba(35, 31, 42, 0.8);
+    --btn-hover: rgba(48, 43, 56, 0.9);
+    --btn-active: rgba(65, 55, 80, 0.9);
+    --input-bg: rgba(13, 12, 16, 0.7);
+    --frame-bg: rgba(26, 24, 32, 0.5);
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -28,7 +68,7 @@
 
 body {
     background-color: var(--bg-color);
-    /* Glowing background blobs that look amazing behind blurred panels */
+    
     background-image: 
         radial-gradient(at 10% 20%, rgba(0, 136, 204, 0.12) 0px, transparent 50%),
         radial-gradient(at 90% 80%, rgba(39, 174, 96, 0.08) 0px, transparent 50%),
@@ -43,7 +83,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Niestandardowy Scrollbar ImGui - Bardziej elegancki */
+
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -69,7 +109,7 @@ body {
     gap: 12px;
 }
 
-/* Okno ImGui - Efekt Akrylu / Blur */
+
 .imgui-window {
     background-color: var(--window-bg);
     border: 1px solid var(--border-color);
@@ -78,12 +118,8 @@ body {
     flex-direction: column;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05);
     overflow: hidden;
-    backdrop-filter: blur(20px) saturate(140%); /* Frosted glass effect */
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.imgui-window:focus-within {
-    border-color: rgba(0, 136, 204, 0.3);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 136, 204, 0.1);
+    backdrop-filter: blur(20px) saturate(140%); 
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .imgui-window.sidebar {
@@ -116,13 +152,13 @@ body {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none; 
 }
 .imgui-content::-webkit-scrollbar {
-    display: none; /* Chrome/Safari/Edge */
+    display: none; 
 }
 
-/* Zakładki (Tryby w sidebarze i główne widoki) */
+
 .imgui-tabs {
     display: flex;
     background-color: rgba(13, 16, 21, 0.4);
@@ -143,7 +179,7 @@ body {
     user-select: none;
     font-weight: 600;
     font-size: 12px;
-    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 .imgui-tab:active {
     transform: scale(0.98);
@@ -155,34 +191,34 @@ body {
 .imgui-tab.active {
     background-color: transparent;
     color: #fff;
-    border-bottom: 1px solid rgba(17, 20, 26, 0.95);
+    border-bottom: 1px solid var(--window-bg);
     margin-bottom: -1px;
-    box-shadow: 0 -2px 0 var(--accent);
+    box-shadow: inset 0 2px 0 var(--accent);
 }
 
-/* Mode Selector (Wielkie Litery) */
+
 .mode-tabs {
     display: flex;
-    gap: 4px;
+    gap: 0px; 
     margin-bottom: 4px;
     background-color: rgba(13, 16, 21, 0.5);
-    padding: 4px;
-    border-radius: 6px;
+    padding: 2px;
+    border-radius: 2px;
     border: 1px solid var(--border-color);
 }
 .mode-tab {
     flex: 1;
     text-align: center;
     background-color: transparent;
-    padding: 8px 4px;
+    padding: 10px 4px; 
     cursor: pointer;
     color: var(--text-muted);
     font-weight: 700;
-    font-size: 11px;
+    font-size: 12px; 
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+    border-radius: 2px; 
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
 }
 .mode-tab:active {
     transform: scale(0.98);
@@ -193,7 +229,7 @@ body {
 }
 .mode-tab.active {
     background-color: var(--accent);
-    color: white;
+    color: var(--accent-text);
     box-shadow: 0 4px 12px var(--accent-glow);
 }
 
@@ -213,7 +249,7 @@ body {
     margin-top: 4px;
 }
 
-/* Kontrolki */
+
 .control-group {
     display: flex;
     align-items: center;
@@ -237,9 +273,67 @@ input[type="number"], input[type="text"] {
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
-input[type="number"]:focus, input[type="text"]:focus {
+input[type="number"]:focus, input[type="text"]:focus, select.imgui-select:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+
+.custom-select-container {
+    position: relative;
+    width: 140px;
+    font-family: inherit;
+    font-size: 13px;
+    user-select: none;
+}
+.custom-select-trigger {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-color);
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.custom-select-trigger:hover {
+    border-color: rgba(255,255,255,0.2);
+}
+.custom-select-trigger.open {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+.custom-select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background-color: var(--window-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+}
+.custom-select-option {
+    padding: 8px 10px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+.custom-select-option:hover {
+    background-color: var(--accent);
+    color: var(--accent-text);
+}
+.custom-select-option.selected {
+    background-color: var(--btn-bg);
+    color: var(--accent);
+    font-weight: bold;
 }
 
 button.imgui-btn {
@@ -271,13 +365,13 @@ button.imgui-btn:active {
 }
 
 button.imgui-btn.primary {
-    background-color: rgba(28, 45, 66, 0.8);
-    border-color: rgba(0, 136, 204, 0.3);
+    background-color: var(--title-bg);
+    border-color: var(--accent-glow);
 }
 button.imgui-btn.primary:hover {
     background-color: var(--title-bg-active);
     border-color: var(--accent);
-    box-shadow: 0 0 12px rgba(0, 136, 204, 0.25);
+    box-shadow: 0 0 12px var(--accent-glow);
 }
 
 button.imgui-btn.success {
@@ -293,12 +387,12 @@ button.imgui-btn.success:active {
     background-color: var(--success-active);
 }
 
-/* Plik / Dropzone z Blurem */
+
 .file-drop {
     border: 2px dashed rgba(255, 255, 255, 0.1);
     border-radius: 6px;
     background-color: rgba(22, 28, 36, 0.4);
-    backdrop-filter: blur(8px); /* Blur behind the dropzone */
+    backdrop-filter: blur(8px); 
     text-align: center;
     padding: 24px 14px;
     cursor: pointer;
@@ -326,10 +420,10 @@ button.imgui-btn.success:active {
     font-weight: 600;
 }
 
-/* Info Box z Blurem */
+
 .info-box {
     background-color: rgba(11, 12, 16, 0.5);
-    backdrop-filter: blur(10px); /* Frosted glass effect for info panels */
+    backdrop-filter: blur(10px); 
     border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 10px 12px;
@@ -349,7 +443,7 @@ button.imgui-btn.success:active {
     justify-content: space-between;
 }
 
-/* Workspace (Canvas) */
+
 .workspace {
     flex-grow: 1;
     background-color: #040608;
@@ -375,7 +469,7 @@ button.imgui-btn.success:active {
 
 canvas {
     display: block;
-    image-rendering: pixelated; /* Ostry pixel-art */
+    image-rendering: pixelated; 
     background: transparent;
 }
 
@@ -397,7 +491,7 @@ canvas {
     gap: 8px;
 }
 
-/* Widok wyników */
+
 .results-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -406,7 +500,7 @@ canvas {
     width: 100%;
     align-content: start;
     overflow-y: auto;
-    background-color: transparent; /* Seamless grid */
+    background-color: transparent; 
 }
 .result-card {
     background-color: rgba(22, 28, 36, 0.45);
@@ -461,7 +555,7 @@ canvas {
     justify-content: space-between;
 }
 
-/* Status */
+
 #status-msg {
     margin-top: 5px;
     padding: 8px 12px;
@@ -496,7 +590,7 @@ canvas {
     backdrop-filter: blur(10px);
 }
 
-/* Settings Modal Styles */
+
 .settings-overlay {
     position: fixed;
     top: 0;

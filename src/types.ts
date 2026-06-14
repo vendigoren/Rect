@@ -14,6 +14,7 @@ export interface Slice {
 
 export interface AppState {
   appMode: "gif2sprite" | "cutting";
+  theme: string;
   file: File | null;
   fileName: string;
   fileInfo: FileInfo | null;
@@ -60,6 +61,7 @@ export interface AppActions {
   handleDragLeave: () => void;
   handleDrop: (e: any) => void;
   handleInputChange: (e: any) => void;
+  changeTheme: (theme: string) => void;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   workspaceRef: React.RefObject<HTMLDivElement | null>;
   canvasContainerRef: React.RefObject<HTMLDivElement | null>;

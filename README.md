@@ -3,14 +3,14 @@
 <div align="center">
   <table>
     <tr>
-      <!-- Lewa strona: Zdjęcie aplikacji -->
+      <!-- Left Side: Icon -->
       <td width="30%">
-        <img src="https://i.imgur.com/GbZQ50q.png" alt="Podgląd aplikacji" width="100%">
+        <img src="https://i.imgur.com/GbZQ50q.png" alt="Preview" width="100%">
       </td>
-      <!-- Prawa strona: Wideo na YouTube (klikalna miniatura) -->
+      <!-- Right Side: YouTube -->
       <td width="70%">
         <a href="https://youtu.be/H-aKoU_3VFw">
-          <img src="https://img.youtube.com/vi/H-aKoU_3VFw/maxresdefault.jpg" alt="Obejrzyj prezentację na YouTube" width="100%">
+          <img src="https://img.youtube.com/vi/H-aKoU_3VFw/maxresdefault.jpg" alt="Preview" width="100%">
         </a>
       </td>
     </tr>

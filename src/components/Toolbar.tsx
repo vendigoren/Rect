@@ -186,7 +186,7 @@ export default function Toolbar({ state, actions }: Props) {
           <div style={{ marginTop: "10px" }}>
             <button
               type="button"
-              className="imgui-btn"
+              className="imgui-btn primary"
               style={{ 
                 display: "flex", 
                 alignItems: "center", 
@@ -194,9 +194,7 @@ export default function Toolbar({ state, actions }: Props) {
                 gap: "6px", 
                 width: "100%", 
                 padding: "6px",
-                background: "rgba(56, 155, 242, 0.15)",
-                border: "1px solid rgba(56, 155, 242, 0.4)",
-                color: "#389bf2"
+                color: "#ffffff"
               }}
               onClick={() => {
                 if (sourceImage) {
@@ -228,7 +226,7 @@ export default function Toolbar({ state, actions }: Props) {
               min="1"
               value={chunkSize}
               onChange={(e) => setChunkSize(Math.max(1, parseInt(e.target.value) || 1))}
-              style={{ color: "#3498db", fontWeight: "bold" }}
+              style={{ color: "var(--accent)", fontWeight: "bold" }}
             />
           </div>
 

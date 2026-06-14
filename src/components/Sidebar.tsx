@@ -12,27 +12,6 @@ export default function Sidebar({ state, actions }: Props) {
 
   return (
     <>
-      <div className="imgui-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span>{t("sidebarTitle")}</span>
-        <button 
-          className="settings-btn-icon" 
-          onClick={() => setShowSettings(true)}
-          title={t("settingsTitle")}
-          style={{
-            background: "none",
-            border: "none",
-            color: "rgba(255,255,255,0.6)",
-            cursor: "pointer",
-            fontSize: "16px",
-            padding: "0 4px",
-            display: "flex",
-            alignItems: "center"
-          }}
-        >
-          ⚙
-        </button>
-      </div>
-
       <div className="mode-tabs" style={{ marginTop: "10px" }}>
           <div
             className={`mode-tab ${appMode === "gif2sprite" ? "active" : ""}`}
@@ -50,6 +29,7 @@ export default function Sidebar({ state, actions }: Props) {
 
         <div className="imgui-header">{t("fileInputHeader")}</div>
         <label
+          htmlFor="fileInput"
           className={`file-drop ${isDragOver ? "dragover" : ""}`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -70,6 +50,7 @@ export default function Sidebar({ state, actions }: Props) {
           </div>
         </label>
         <input
+          id="fileInput"
           type="file"
           ref={fileInputRef}
           onChange={handleInputChange}

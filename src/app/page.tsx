@@ -5,21 +5,23 @@ import JSZip from "jszip";
 import { GifReader } from "omggif";
 
 const groupColors = [
-  "rgba(41, 128, 185, 0.5)",   // Blue
-  "rgba(39, 174, 96, 0.5)",    // Green
-  "rgba(211, 84, 0, 0.5)",     // Orange
-  "rgba(142, 68, 173, 0.5)",   // Purple
-  "rgba(192, 57, 43, 0.5)",    // Red
-  "rgba(22, 160, 133, 0.5)",   // Teal
-  "rgba(243, 156, 18, 0.5)"    // Yellow
+  "rgba(41, 128, 185, 0.5)",   
+  "rgba(39, 174, 96, 0.5)",    
+  "rgba(211, 84, 0, 0.5)",     
+  "rgba(142, 68, 173, 0.5)",   
+  "rgba(192, 57, 43, 0.5)",    
+  "rgba(22, 160, 133, 0.5)",   
+  "rgba(243, 156, 18, 0.5)"    
 ];
 
 import { translations } from "../utils/i18n";
 import Sidebar from "../components/Sidebar";
 import Toolbar from "../components/Toolbar";
 import Workspace from "../components/Workspace";
+import CustomSelect from "../components/CustomSelect";
 import { AppState, AppActions } from "../types";
 import { useLanguage } from "../hooks/useLanguage";
+import { useTheme } from "../hooks/useTheme";
 
 
 interface FileInfo {
@@ -62,6 +64,7 @@ export default function Home() {
   const [status, setStatus] = useState<{ text: string; isError: boolean } | null>(null);
 
   const { language, changeLanguage, t } = useLanguage();
+  const { theme, changeTheme } = useTheme();
   const [showSettings, setShowSettings] = useState<boolean>(false);
 
   const transformRef = useRef({ scale: 1, x: 0, y: 0 });
@@ -320,7 +323,7 @@ export default function Home() {
 
       const findGapPositions = (emptyArr: boolean[], total: number): number[] => {
         const gaps: number[] = [];
-        let i = 1; // skip edge
+        let i = 1; 
         while (i < total - 1) {
           if (emptyArr[i]) {
 
@@ -384,15 +387,15 @@ export default function Home() {
       for (let c = 1; c <= Math.min(maxDiv, W); c++) {
         if (W % c !== 0) continue;
         const cellW = W / c;
-        if (cellW < 32) continue; // frames should be at least 32px wide
+        if (cellW < 32) continue; 
 
         for (let r = 1; r <= Math.min(maxDiv, H); r++) {
           if (H % r !== 0) continue;
           const cellH = H / r;
-          if (cellH < 32) continue; // frames should be at least 32px tall
+          if (cellH < 32) continue; 
 
           const aspect = Math.max(cellW / cellH, cellH / cellW);
-          const aspectPenalty = -(aspect - 1) * 2; // 0 for square, negative for non-square
+          const aspectPenalty = -(aspect - 1) * 2; 
 
           const totalFrames = c * r;
           let countBonus = 0;
@@ -404,7 +407,7 @@ export default function Home() {
 
           let stdBonus = 0;
           if (cellW % 16 === 0 && cellH % 16 === 0) stdBonus += 0.2;
-          if (cellW === cellH) stdBonus += 0.5; // extra for perfect squares
+          if (cellW === cellH) stdBonus += 0.5; 
 
           const score = aspectPenalty + countBonus + sizeBonus + stdBonus;
 
@@ -449,6 +452,16 @@ export default function Home() {
   const handleDragLeave = () => {
     setIsDragOver(false);
   };
+
+  useEffect(() => {
+    const preventGlobal = (e: DragEvent) => e.preventDefault();
+    window.addEventListener("dragover", preventGlobal);
+    window.addEventListener("drop", preventGlobal);
+    return () => {
+      window.removeEventListener("dragover", preventGlobal);
+      window.removeEventListener("drop", preventGlobal);
+    };
+  }, []);
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
@@ -823,7 +836,7 @@ export default function Home() {
   const appState: AppState = {
     appMode, file, fileName, fileInfo, sourceImage, gifFrames, generatedSlices,
     gifCols, autoGifCols, gridCols, gridRows, chunkSize, gifFrameWidth, gifFrameHeight,
-    targetFrameWidth, targetFrameHeight, tab, status, language, showSettings,
+    targetFrameWidth, targetFrameHeight, tab, status, language, theme, showSettings,
     isDragging, isDragOver, isZipping
   };
 
@@ -831,7 +844,7 @@ export default function Home() {
     setAppMode, handleSwitchMode, setAutoGifCols, setGifCols, handleGenerateGif,
     setGridCols, setGridRows, setTargetFrameWidth, setTargetFrameHeight, setChunkSize,
     detectGridLayout, handleGenerateCut, handleDownloadAllZip, setTab, handleMouseDown,
-    setShowSettings, changeLanguage, handleDragOver, handleDragLeave, handleDrop,
+    setShowSettings, changeLanguage, changeTheme, handleDragOver, handleDragLeave, handleDrop,
     handleInputChange, fileInputRef, workspaceRef, canvasContainerRef, canvasRef,
     transformRef, downloadSingle, getExecutionPlan, t, showStatus
   };
@@ -839,8 +852,28 @@ export default function Home() {
   return (
     <div className="desktop">
       <div className="imgui-window sidebar">
-        <Sidebar state={appState} actions={appActions} />
-        <div className="imgui-content" style={{ paddingTop: 0, marginTop: "-10px" }}>
+        <div className="imgui-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>{t("sidebarTitle")}</span>
+          <button 
+            className="settings-btn-icon" 
+            onClick={() => setShowSettings(true)}
+            title={t("settingsTitle")}
+            style={{
+              background: "none",
+              border: "none",
+              color: "rgba(255,255,255,0.6)",
+              cursor: "pointer",
+              fontSize: "16px",
+              padding: "0 4px",
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
+            ⚙
+          </button>
+        </div>
+        <div className="imgui-content">
+          <Sidebar state={appState} actions={appActions} />
           <Toolbar state={appState} actions={appActions} />
         </div>
       </div>
@@ -849,7 +882,7 @@ export default function Home() {
 
       {showSettings && (
         <div className="settings-overlay" onClick={() => setShowSettings(false)}>
-          <div className="imgui-window settings-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="imgui-window settings-modal" onClick={(e) => e.stopPropagation()} style={{ overflow: "visible" }}>
             <div className="imgui-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span>{t("settingsTitle")}</span>
               <button 
@@ -860,18 +893,29 @@ export default function Home() {
                 ×
               </button>
             </div>
-            <div className="imgui-content" style={{ padding: "15px" }}>
+            <div className="imgui-content" style={{ padding: "15px", overflow: "visible" }}>
               <div className="control-group" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
                 <span className="control-label" style={{ minWidth: "120px" }}>{t("settingsLanguageLabel")}</span>
-                <select
+                <CustomSelect
                   value={language}
-                  onChange={(e) => changeLanguage(e.target.value as "en" | "pl")}
-                  className="imgui-select"
-                  style={{ background: "#161b22", color: "#fff", border: "1px solid var(--border-color)", padding: "4px 8px", borderRadius: "3px", cursor: "pointer", outline: "none" }}
-                >
-                  <option value="en">English</option>
-                  <option value="pl">Polski</option>
-                </select>
+                  onChange={(val) => changeLanguage(val as "en" | "pl")}
+                  options={[
+                    { value: "en", label: "English" },
+                    { value: "pl", label: "Polski" }
+                  ]}
+                />
+              </div>
+              <div className="control-group" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", marginTop: "10px" }}>
+                <span className="control-label" style={{ minWidth: "120px" }}>{t("settingsThemeLabel")}</span>
+                <CustomSelect
+                  value={theme}
+                  onChange={(val) => changeTheme(val)}
+                  options={[
+                    { value: "azure", label: t("themeAzure") },
+                    { value: "pearl", label: t("themePearl") },
+                    { value: "lavender", label: t("themeLavender") }
+                  ]}
+                />
               </div>
               <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
                 <button className="imgui-btn primary" onClick={() => setShowSettings(false)} style={{ padding: "5px 15px" }}>
