@@ -34,7 +34,11 @@ export default function CustomSelect({ options, value, onChange }: Props) {
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>{selectedOption.label}</span>
-        <span className="arrow" style={{ fontSize: "10px", marginLeft: "8px", transform: isOpen ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>▼</span>
+        <span className="arrow" style={{ display: "flex", alignItems: "center", marginLeft: "8px", transform: isOpen ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </span>
       </div>
       {isOpen && (
         <div className="custom-select-dropdown">

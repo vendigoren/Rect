@@ -1,30 +1,26 @@
 @echo off
-title Rect Sprite Tool - Kompilator EXE
+title Rect Compile
 set "PATH=%USERPROFILE%\.cargo\bin;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64;%PATH%"
-echo =========================================================
-echo  Kompilowanie aplikacji do pliku .exe
-echo =========================================================
+echo Compiling Application to .exe
 echo.
-echo Kompilacja moze potrwac chwile, prosze czekac...
+echo Compilation may take a moment, please wait.
 echo.
 call npm run tauri build
 if %ERRORLEVEL% NEQ 0 (
     echo.
-    echo [BLAD] Kompilacja nie powiodla sie!
+    echo [ERROR] Compilation failed.
     pause
     exit /b %ERRORLEVEL%
 )
 
 echo.
-echo Kopiowanie gotowego pliku .exe do folderu glownego...
+echo Copying compiled .exe file to root directory...
 if exist "src-tauri\target\release\app.exe" (
-    copy "src-tauri\target\release\app.exe" "rect-tool.exe" /Y
+    copy "src-tauri\target\release\app.exe" "Rect.exe" /Y
     echo.
-    echo =========================================================
-    echo  SUKCES! Gotowy plik znajdziesz w: rect-tool.exe
-    echo =========================================================
+    echo Success, executable is ready.
 ) else (
-    echo [BLAD] Nie znaleziono pliku exe w folderze release.
+    echo [ERROR] Executable not found in release folder.
 )
 echo.
 pause
