@@ -1,15 +1,18 @@
 {
   "name": "rect",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "tauri": "tauri"
   },
   "dependencies": {
+    "@tauri-apps/plugin-process": "^2.3.1",
+    "@tauri-apps/plugin-updater": "^2.10.1",
+    "gifenc": "^1.0.3",
     "jszip": "^3.10.1",
     "next": "16.2.7",
     "omggif": "^1.0.10",

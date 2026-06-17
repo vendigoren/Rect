@@ -8,7 +8,7 @@ const dynaPuff = DynaPuff({
 });
 
 export const metadata: Metadata = {
-  title: "Rect - Sprite Tool",
+  title: "Rect",
   description: "Narzędzie do tworzenia arkuszy klatek (spritesheet) z GIF oraz cięcia i dzielenia istniejących arkuszy.",
 };
 

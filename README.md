@@ -17,11 +17,11 @@ This desktop app is completely bloat-free. **Rust** handles the heavy lifting, g
 
 ![How to use it?](./images/how-to-use.png)
 It's designed to be as dummy-proof as possible:
-1. Open the app and drop your `.gif` into the **Convert** tab.
+1. Open the app and drop your `.gif` into the **Transform** tab.
 2. The app will generate a perfect grid layout. Click **Generate Spritesheet**.
-3. *Want to cut it up into smaller portions later?* Drop that generated PNG into the **Split** tab.
+3. *Want to cut it up into smaller portions later?* Drop that generated PNG into the **Modify** tab.
 4. The steganography algorithm will automatically detect the exact grid you used earlier.
-5. Have fun with Grid Layout and Package Division if you want to.
+5. Have fun with editing Frames and Package Division if you want to.
 6. Hit **Generate Packages** and download your perfectly sliced ZIP file!
 
 > [!TIP]

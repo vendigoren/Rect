@@ -12,47 +12,87 @@ export interface Slice {
   h: number;
 }
 
+export interface AnimationFrame {
+  id: string;
+  canvas: HTMLCanvasElement;
+  width: number;
+  height: number;
+  name?: string;
+}
+
 export interface AppState {
-  appMode: "gif2sprite" | "cutting";
+  language: string;
   theme: string;
+  showSettings: boolean;
+  appMode: "conversion" | "editing";
+  conversionDir: "gif2sprite" | "sprite2gif";
   file: File | null;
   fileName: string;
   fileInfo: FileInfo | null;
   sourceImage: HTMLImageElement | null;
   gifFrames: HTMLCanvasElement[];
-  generatedSlices: Slice[];
+  generatedSlices: { filename: string; dataURL: string; w: number; h: number; framesCount: number }[];
+  isZipping: boolean;
+  isExportingGif: boolean;
+  
   gifCols: number;
   autoGifCols: boolean;
+  
   gridCols: number;
   gridRows: number;
-  chunkSize: number;
-  gifFrameWidth: number;
-  gifFrameHeight: number;
   targetFrameWidth: number;
   targetFrameHeight: number;
+  chunkSize: number;
+  
+  connectFrames: { file: File, img: HTMLImageElement, name: string }[];
+  connectDelay: number;
+  exportFrameCount: number;
+
+  editorFrames: AnimationFrame[];
+  selectedFrameIds: Set<string>;
+  historyStack: AnimationFrame[][];
+  futureStack: AnimationFrame[][];
+  draggedFrameId: string | null;
+
   tab: "preview" | "results";
-  status: { text: string; isError: boolean } | null;
-  language: "en" | "pl";
-  showSettings: boolean;
+  
+  gifFrameWidth: number;
+  gifFrameHeight: number;
+  
   isDragging: boolean;
   isDragOver: boolean;
-  isZipping?: boolean;
+
+  status: { text: string; isError: boolean } | null;
+  transformRef: React.MutableRefObject<{ scale: number; x: number; y: number }>;
 }
 
 export interface AppActions {
-  setAppMode: (m: "gif2sprite" | "cutting") => void;
-  handleSwitchMode: (mode: "gif2sprite" | "cutting") => void;
-  setAutoGifCols: (val: boolean) => void;
-  setGifCols: (val: number) => void;
+  setAppMode: React.Dispatch<React.SetStateAction<"conversion" | "editing">>;
+  handleSwitchMode: (mode: "conversion" | "editing") => void;
+  setConversionDir: (dir: "gif2sprite" | "sprite2gif") => void;
+  setAutoGifCols: (b: boolean) => void;
+  setGifCols: (n: number) => void;
   handleGenerateGif: () => void;
-  setGridCols: (val: number) => void;
-  setGridRows: (val: number) => void;
-  setTargetFrameWidth: (val: number) => void;
-  setTargetFrameHeight: (val: number) => void;
-  setChunkSize: (val: number) => void;
+  setGridCols: (n: number) => void;
+  setGridRows: (n: number) => void;
+  setTargetFrameWidth: (n: number) => void;
+  setTargetFrameHeight: (n: number) => void;
+  setChunkSize: (n: number) => void;
   detectGridLayout: (img: HTMLImageElement) => void;
   handleGenerateCut: () => void;
   handleDownloadAllZip: () => void;
+  handleExportAsGif: () => void;
+  setConnectDelay: (n: number) => void;
+  setExportFrameCount: (n: number) => void;
+  handleGenerateConnectGif: () => void;
+  undoEditor: () => void;
+  redoEditor: () => void;
+  toggleSelectFrame: (id: string, multi: boolean) => void;
+  deleteSelectedFrames: () => void;
+  reorderFrame: (id: string, newIndex: number) => void;
+  setDraggedFrameId: (id: string | null) => void;
+  handleEditorExportGif: () => void;
+  handleEditorGenerateCut: () => void;
   setTab: (t: "preview" | "results") => void;
   handleMouseDown: (e: any) => void;
   setShowSettings: (val: boolean) => void;
@@ -68,7 +108,7 @@ export interface AppActions {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   transformRef: React.MutableRefObject<{ scale: number; x: number; y: number }>;
   downloadSingle: (dataURL: string, filename: string) => void;
-  getExecutionPlan: () => any;
   t: any;
   showStatus: (text: string, isError?: boolean) => void;
 }
+

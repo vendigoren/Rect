@@ -7,21 +7,32 @@ interface Props {
 }
 
 export default function Sidebar({ state, actions }: Props) {
-  const { appMode, fileName, fileInfo, isDragOver } = state;
-  const { handleSwitchMode, handleDragOver, handleDragLeave, handleDrop, fileInputRef, handleInputChange, t, setShowSettings } = actions;
+  const { appMode, conversionDir, fileName, fileInfo, isDragOver } = state;
+  const { handleSwitchMode, handleDragOver, handleDragLeave, handleDrop, fileInputRef, handleInputChange, t } = actions;
+
+  const isMultiple = appMode === "conversion" && conversionDir === "sprite2gif";
+  const accept = appMode === "conversion" && conversionDir === "gif2sprite"
+    ? "image/gif"
+    : "image/png, image/jpeg";
+
+  const hintText = appMode === "conversion" && conversionDir === "gif2sprite"
+    ? t("dragDropHintGif")
+    : appMode === "editing"
+    ? t("dragDropHintEditor")
+    : t("dragDropHintImg");
 
   return (
     <>
       <div className="mode-tabs" style={{ marginTop: "10px" }}>
           <div
-            className={`mode-tab ${appMode === "gif2sprite" ? "active" : ""}`}
-            onClick={() => handleSwitchMode("gif2sprite")}
+            className={`mode-tab ${appMode === "conversion" ? "active" : ""}`}
+            onClick={() => handleSwitchMode("conversion")}
           >
             {t("tabSpritesheet")}
           </div>
           <div
-            className={`mode-tab ${appMode === "cutting" ? "active" : ""}`}
-            onClick={() => handleSwitchMode("cutting")}
+            className={`mode-tab ${appMode === "editing" ? "active" : ""}`}
+            onClick={() => handleSwitchMode("editing")}
           >
             {t("tabCutter")}
           </div>
@@ -45,9 +56,7 @@ export default function Sidebar({ state, actions }: Props) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
           <div>{fileName || t("dragDropChooseFile")}</div>
-          <div className="text-info">
-            {appMode === "gif2sprite" ? t("dragDropHintGif") : t("dragDropHintImg")}
-          </div>
+          <div className="text-info">{hintText}</div>
         </label>
         <input
           id="fileInput"
@@ -55,7 +64,8 @@ export default function Sidebar({ state, actions }: Props) {
           ref={fileInputRef}
           onChange={handleInputChange}
           style={{ display: "none" }}
-          accept={appMode === "gif2sprite" ? "image/gif" : "image/png, image/jpeg"}
+          accept={accept}
+          multiple={isMultiple}
         />
         <button className="imgui-btn" onClick={() => fileInputRef.current?.click()} style={{ marginTop: "-6px" }}>
           {t("browseFiles")}
